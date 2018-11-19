@@ -44,6 +44,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 	protected isFemale: boolean;
 	protected firstAppearDone: boolean;
 	protected deltaYearPRLabel: string;
+	protected hrPwr: string;
 	protected deltaPRLabel: string;
 	protected deltaKomLabel: string;
 
@@ -51,6 +52,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 		super();
 		this.showDifferenceToKOM = userSettings.displaySegmentTimeComparisonToKOM;
 		this.showDifferenceToPR = isMyOwn && userSettings.displaySegmentTimeComparisonToPR;
+                //this.showHrPwr = isMyOwn && userSettings.displayHrPwr;
 		this.showDifferenceToCurrentYearPR = isMyOwn && userSettings.displaySegmentTimeComparisonToCurrentYearPR;
 		this.displaySegmentTimeComparisonPosition = userSettings.displaySegmentTimeComparisonPosition;
 		this.appResources = appResources;
@@ -99,6 +101,9 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					timeColumnHeader = segments.find("table.segments th:contains('Time')");
 				}
 
+                            timeColumnHeader.after("<th title='Column just shows avg_HR divided by avg_Power'>"+ this.hrPwr + "</th>");
+
+
 				if (this.showDifferenceToPR && this.showDifferenceToCurrentYearPR) {
 					timeColumnHeader.after("<th style='font-size:11px;' title='Column shows the difference between the activity segment time and your current year PR on that segment.'>" + this.deltaYearPRLabel + "</th>");
 				}
@@ -127,13 +132,18 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					positionCell: JQuery,
 					deltaKomCell: JQuery,
 					deltaPRCell: JQuery,
-					deltaYearPRCell: JQuery;
+					deltaYearPRCell: JQuery,
+					hrPwrCell: JQuery;
 
 				if ($row.hasClass("selected") || $row.data("segment-time-comparison")) {
 					return;
 				}
 
 				$row.data("segment-time-comparison", true);
+
+                                hrPwrCell = $("<td><span class='ajax-loading-image'></span></td>");
+                                $timeCell.after(hrPwrCell);
+
 
 				if (this.showDifferenceToPR && this.showDifferenceToCurrentYearPR) {
 					deltaYearPRCell = $("<td><span class='ajax-loading-image'></span></td>");
@@ -168,6 +178,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 						deltaKomCell.html("-");
 						deltaPRCell.html("-");
 						deltaYearPRCell.html("-");
+						hrPwrCell.html("a");
 						return;
 					}
 
@@ -204,6 +215,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					this.findCurrentSegmentEffortDate(segmentEffortInfo.segment_id, segmentEffortId).then((currentSegmentEffortDateTime: Date, leaderBoardData: EffortInfo[]) => {
 						this.handleTimeDifferenceAlongUserLeaderBoard(leaderBoardData, currentSegmentEffortDateTime, elapsedTime, segmentEffortId, deltaPRCell, deltaYearPRCell);
 					});
+                                        hrPwrCell.html((segmentEffortInfo.avg_hr_raw / segmentEffortInfo.avg_watts_raw).toFixed(2) + " <sup>bpm</sup>&frasl;<sub>W</sub>");
 
 				});
 			});
@@ -236,6 +248,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 		this.deltaKomLabel = "&Delta;" + this.crTitle();
 		this.deltaPRLabel = "&Delta;PR";
 		this.deltaYearPRLabel = "&Delta;yPR";
+                this.hrPwr = "<sup>HR</sup>&frasl;<sub>PWR</sub>");
 	}
 
 	protected findCurrentSegmentEffortDate(segmentId: number, segmentEffortId: number, page?: number, deferred?: JQueryDeferred<any>, fetchedLeaderboardData?: EffortInfo[]): JQueryPromise<any> {
