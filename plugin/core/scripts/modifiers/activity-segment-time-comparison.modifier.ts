@@ -26,6 +26,9 @@ export interface EffortInfo {
 	qom_time: string;
 	kom_time: string;
 
+        avg_hr_raw: number;
+        avg_watts_raw: number;
+
 	__dateTime: Date; // field added by us: start_date_local_raw converted into machine readable format (how is this different from start_date_local?)
 }
 
@@ -101,7 +104,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					timeColumnHeader = segments.find("table.segments th:contains('Time')");
 				}
 
-                            timeColumnHeader.after("<th title='Column just shows avg_HR divided by avg_Power'>"+ this.hrPwr + "</th>");
+                                timeColumnHeader.after("<th title='Column just shows avg_HR divided by avg_Power'>"+ this.hrPwr + "</th>");
 
 
 				if (this.showDifferenceToPR && this.showDifferenceToCurrentYearPR) {
@@ -248,7 +251,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 		this.deltaKomLabel = "&Delta;" + this.crTitle();
 		this.deltaPRLabel = "&Delta;PR";
 		this.deltaYearPRLabel = "&Delta;yPR";
-                this.hrPwr = "<sup>HR</sup>&frasl;<sub>PWR</sub>");
+                this.hrPwr = "<sup>HR</sup>&frasl;<sub>PWR</sub>";
 	}
 
 	protected findCurrentSegmentEffortDate(segmentId: number, segmentEffortId: number, page?: number, deferred?: JQueryDeferred<any>, fetchedLeaderboardData?: EffortInfo[]): JQueryPromise<any> {
