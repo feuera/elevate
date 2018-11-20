@@ -104,7 +104,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					timeColumnHeader = segments.find("table.segments th:contains('Time')");
 				}
 
-                                timeColumnHeader.after("<th title='Column just shows avg_HR divided by avg_Power'>"+ this.hrPwr + "</th>");
+                                timeColumnHeader.after("<th title='Column just shows avg_Power divided by avg_Heartrate'>"+ this.hrPwr + "</th>");
 
 
 				if (this.showDifferenceToPR && this.showDifferenceToCurrentYearPR) {
@@ -181,7 +181,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 						deltaKomCell.html("-");
 						deltaPRCell.html("-");
 						deltaYearPRCell.html("-");
-						hrPwrCell.html("a");
+						hrPwrCell.html("-");
 						return;
 					}
 
@@ -210,6 +210,8 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 							+ "<br/>" + ((Math.sign(komPercentTime) == 1) ? "+" : "") + komPercentTime.toFixed(1) + "%</span>");
 					}
 
+                                        hrPwrCell.html((segmentEffortInfo.avg_watts_raw / segmentEffortInfo.avg_hr_raw).toFixed(2) + " <sup>W</sup>&frasl;<sub>beat</sub>");
+
 					if (!this.showDifferenceToPR && !this.showDifferenceToCurrentYearPR) {
 						return;
 					}
@@ -218,7 +220,6 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 					this.findCurrentSegmentEffortDate(segmentEffortInfo.segment_id, segmentEffortId).then((currentSegmentEffortDateTime: Date, leaderBoardData: EffortInfo[]) => {
 						this.handleTimeDifferenceAlongUserLeaderBoard(leaderBoardData, currentSegmentEffortDateTime, elapsedTime, segmentEffortId, deltaPRCell, deltaYearPRCell);
 					});
-                                        hrPwrCell.html((segmentEffortInfo.avg_hr_raw / segmentEffortInfo.avg_watts_raw).toFixed(2) + " <sup>bpm</sup>&frasl;<sub>W</sub>");
 
 				});
 			});
@@ -251,7 +252,7 @@ export class ActivitySegmentTimeComparisonModifier extends AbstractModifier {
 		this.deltaKomLabel = "&Delta;" + this.crTitle();
 		this.deltaPRLabel = "&Delta;PR";
 		this.deltaYearPRLabel = "&Delta;yPR";
-                this.hrPwr = "<sup>HR</sup>&frasl;<sub>PWR</sub>";
+                this.hrPwr = "<sup>PWR</sup>&frasl;<sub>HR</sub>";
 	}
 
 	protected findCurrentSegmentEffortDate(segmentId: number, segmentEffortId: number, page?: number, deferred?: JQueryDeferred<any>, fetchedLeaderboardData?: EffortInfo[]): JQueryPromise<any> {
